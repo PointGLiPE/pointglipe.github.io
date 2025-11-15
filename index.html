@@ -1,0 +1,1151 @@
+<!DOCTYPE html> <!--告诉浏览器这是一个 HTML5 页面-->
+<html>  <!--网页的所有内容都在html中-->
+
+<head>  <!--网页的设置-->
+    <!-- Google 分析工具代码 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-55V1E709SK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-55V1E709SK');
+    </script>
+    <!--网页设置部分-->
+    <meta charset="utf-8">
+    <meta name="description"
+          content="PointGLiPE: Global–Local Integrated Positional Encoding for Point Clouds">
+    <meta name="keywords"
+          content="Point cloud representation, Positional encoding, Geometric deep learning,p Multi-scale modeling, Global-local integration">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  <!--手机显示设置-->
+    <title>Rethinking and Improving Position Encoding for Point Cloud: A Global-Local Integrated Framework
+    </title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/xxxxx"></script>
+    <!--比如有多少人访问了你的网站，他们点击了什么,把后面收集到的数据都关联到这个项目上-->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'G-PYVRSFMDRL');
+    </script>
+    <!--给网页加载一个 CSS static文件字体，滚动....-->
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <!--给网页引入 JavaScript 脚本，用于添加交互功能，比如按钮点击、图片轮播、滑动条等行为文件-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <script src="./static/js/script.js"></script>
+
+</head>
+
+
+<!--下面开始正文-->
+<body>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered is-variable is-3">
+        <div class="column is-narrow has-text-centered">
+          <!-- Paper Button -->
+          <a class="button is-dark is-rounded is-normal is-fullwidth"
+             style="pointer-events: none; cursor: default;">
+            <span class="icon">
+              <i class="fas fa-file-pdf"></i>
+            </span>
+            <span>The paper will be released</span>
+          </a>
+        </div>
+
+        <div class="column is-narrow has-text-centered">
+          <!-- Code Button -->
+          <a class="button is-dark is-rounded is-normal is-fullwidth"
+             href="https://github.com/PointGLiPE/PointGLiPE"
+             target="_blank">
+            <span class="icon"><i class="fab fa-github"></i></span>
+            <span>The code</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+                <h2 class="title is-3">Overview</h2>
+                <div class="content has-text-justified">
+                    <p>
+                        Point clouds are inherently irregular, and their positional information contains rich semantic
+                        cues. To effectively perform positional encoding for point clouds, it is crucial to account for
+                        their intrinsic characteristics. In this paper, we revisit the fundamental role of positional
+                        encoding in point cloud learning and propose PointGLiPE, a global–local integrated positional
+                        encoding framework that explicitly models multi-scale global references, local geometric
+                        structures, and context-aware neighborhood relations. PointGLiPE consists of three modules:
+                        Multi-Scale Positional Encoding (MSPE) for capturing cross-level spatial context, Local
+                        Geometric Positional Encoding (LGPE) for fine-grained shape representation, and Local Relational
+                        Positional Encoding (LRPE) for adaptive neighborhood relation modeling. The framework can be
+                        seamlessly integrated into U–Netstyle point cloud backbones to achieve effective positional
+                        encoding for point clouds. Extensive experiments on five public datasets for classification and
+                        segmentation demonstrate the generality and effectiveness of PointGLiPE. Ablation studies and
+                        Shapley-value analyses further verify the complementary contributions of the three modules.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <!-- Concurrent Work. -->
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <h2 class="title is-3">Motivation</h2>
+
+                <!-- 两张图并列 -->
+                <div class="columns is-centered">
+                    <div class="column is-half">
+                        <img src="./dynamic/result/intro1.png" style="height:500px; width:auto;">
+                    </div>
+                    <div class="column is-half">
+                        <img src="./dynamic/result/intro2.png" style="height:500px; width:auto;">
+                    </div>
+                </div>
+
+                <div class="content has-text-justified">
+
+                    <p><strong>Illustration of positional encoding differences between images and point
+                        clouds. </strong> From a global perspective (left), an
+                        image can be viewed as a two-dimensional projection of a threedimensional scene, where adjacent
+                        pixels in the 2D plane may correspond to spatially distant regions in 3D space. In contrast, the
+                        distances between points in a point cloud faithfully preserve the true geometric relationships,
+                        providing an intrinsic spatial organization that directly reflects the underlying scene
+                        geometry. Moreover, image coordinates are defined on a regular and topologically connected grid,
+                        which inherently encodes a consistent notion of spatial order. Point clouds, however, are
+                        irregular, unordered, and permutation-invariant—each point independently resides in continuous
+                        3D space, and its absolute coordinate alone offers no explicit clue about its structural role or
+                        semantic position within an object or environment. From a local perspective (right),
+                        positional encodings in images mainly serve as spatial indices, helping recover the original 2D
+                        arrangement that may be lost during tokenization or flattening operations in transformers. Such
+                        encodings primarily convey location identity but lack deeper geometric or semantic information.
+                        In contrast, the coordinates of points inherently embed rich semantic and geometric cues,
+                        reflecting object shape, part composition, and spatial hierarchy. Furthermore, when encoding
+                        relative positional relationships among points, it is essential to account for the local
+                        geometric context—including neighborhood shape, point density, and scale variation—since these
+                        factors significantly influence the interpretation of spatial relations. Consequently, naively
+                        relying on coordinate differences or Euclidean distances often fails to capture fine-grained
+                        local geometry, motivating the design of context-aware positional encoding mechanisms tailored
+                        for irregular 3D point sets.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div style="text-align: center;">
+                        <img src="./dynamic/result/framework.png"
+                             style="max-width: 100%; height: auto; display: inline-block;">
+                    </div>
+                    <p><strong>Overview of the proposed
+                        framework.</strong> The network adopts a U-Net–style architecture for point cloud semantic
+                        segmentation
+                        and classification, consisting of an encoder–decoder structure. The positional encoding
+                        mechanism is integrated into the encoder and comprises three complementary modules: Multi-Scale
+                        Positional Encoding (MSPE) for global spatial encoding, Local Geometric Positional Encoding
+                        (LGPE) and Local Relational Positional Encoding (LRPE) for fine-grained local context modeling.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <h2 class="title is-3 has-text-centered">Experiments</h2>
+                    <p>We evaluate PointGLiPE on five widely-used point-cloud benchmarks covering three representative
+                        tasks. For shape classification we use ModelNet40 and
+                        ScanObjectNN; for part segmentation we use ShapeNetPart; for
+                        indoor scene semantic segmentation we use S3DIS and ScanNet v2.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div class="content has-text-centered">
+                        <p><strong>Network configurations on five datasets.</strong></p>
+                        <p><small>“Dimension” lists feature
+                            dimensions per stage; “Depth” indicates the number of blocks per stage; “𝐾-neighbors”
+                            denotes neighborhood size used for local aggregation; “Params” reports total learnable
+                            parameters in millions (M).</small></p>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Dimension</th>
+                                <th>Depth</th>
+                                <th>K-neighbors</th>
+                                <th>Params</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>ModelNet40</td>
+                                <td>96-192-384</td>
+                                <td>2-2-2</td>
+                                <td>20</td>
+                                <td>7.0M</td>
+                            </tr>
+                            <tr>
+                                <td>ScanObjectNN</td>
+                                <td>96-192-384</td>
+                                <td>2-2-2</td>
+                                <td>24</td>
+                                <td>7.0M</td>
+                            </tr>
+                            <tr>
+                                <td>ShapeNetPart</td>
+                                <td>96-192-288-384</td>
+                                <td>2-2-2-2</td>
+                                <td>20</td>
+                                <td>7.6M</td>
+                            </tr>
+                            <tr>
+                                <td>S3DIS</td>
+                                <td>64-128-256-512</td>
+                                <td>2-2-4-2</td>
+                                <td>24</td>
+                                <td>10.7M</td>
+                            </tr>
+                            <tr>
+                                <td>ScanNet v2</td>
+                                <td>64-96-160-288-512</td>
+                                <td>1-2-2-4-2</td>
+                                <td>24</td>
+                                <td>12.1M</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div class="content has-text-centered">
+                        <p><strong>Data augmentations used for each dataset.</strong></p>
+                        <p><small> A checkmark (✓) indicates the
+                            augmentation is applied. Vertical rotation is applied around the up axis; jittering adds
+                            Gaussian noise to coordinates; height translation shifts points vertically; elastic
+                            distortion perturbs coordinates via a randomized displacement field.</small></p>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Vertical rotation</th>
+                                <th>Jittering</th>
+                                <th>Height translation</th>
+                                <th>Elastic distortion</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>ModelNet40</td>
+                                <td></td>
+                                <td></td>
+                                <td>✓</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>ScanObjectNN</td>
+                                <td>✓</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>ShapeNetPart</td>
+                                <td></td>
+                                <td>✓</td>
+                                <td>✓</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>S3DIS</td>
+                                <td>✓</td>
+                                <td>✓</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>ScanNet v2</td>
+                                <td>✓</td>
+                                <td></td>
+                                <td></td>
+                                <td>✓</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p><strong>Classification results on ModelNet40</strong></p>
+                    <p><small>OA: overall accuracy. mAcc: mean per-class accuracy. Params: number of parameters in
+                        millions (M). A dash (-) indicates value not reported.</small></p>
+                </div>
+                <table class="table is-bordered is-striped is-fullwidth is-hoverable">
+                    <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>OA (%)</th>
+                        <th>mAcc (%)</th>
+                        <th>Params (M)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>PointNet</td>
+                        <td>89.2</td>
+                        <td>86.2</td>
+                        <td>3.5</td>
+                    </tr>
+                    <tr>
+                        <td>PointNet++</td>
+                        <td>91.9</td>
+                        <td>-</td>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <td>SI-Mamba</td>
+                        <td>92.7</td>
+                        <td>90.5</td>
+                        <td>12.3</td>
+                    </tr>
+                    <tr>
+                        <td>DGCNN</td>
+                        <td>92.9</td>
+                        <td>90.2</td>
+                        <td>1.8</td>
+                    </tr>
+                    <tr>
+                        <td>LFE-PM</td>
+                        <td>93.0</td>
+                        <td>-</td>
+                        <td>9.0</td>
+                    </tr>
+                    <tr>
+                        <td>PCT</td>
+                        <td>93.2</td>
+                        <td>-</td>
+                        <td>2.9</td>
+                    </tr>
+                    <tr>
+                        <td>DualMLP</td>
+                        <td>93.7</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>PTv1</td>
+                        <td>93.8</td>
+                        <td>90.6</td>
+                        <td>4.9</td>
+                    </tr>
+                    <tr>
+                        <td>CurveNet</td>
+                        <td>93.8</td>
+                        <td>-</td>
+                        <td>2.0</td>
+                    </tr>
+                    <tr>
+                        <td>GBNet</td>
+                        <td>93.8</td>
+                        <td>91.0</td>
+                        <td>8.4</td>
+                    </tr>
+                    <tr>
+                        <td>PointNeXt</td>
+                        <td>94.0</td>
+                        <td>91.1</td>
+                        <td>1.4</td>
+                    </tr>
+                    <tr>
+                        <td>PointMLP</td>
+                        <td>94.1</td>
+                        <td>91.3</td>
+                        <td>12.6</td>
+                    </tr>
+                    <tr>
+                        <td>PTv2</td>
+                        <td>94.2</td>
+                        <td>91.6</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PointGLiPE (ours)</strong></td>
+                        <td><strong>94.4</strong></td>
+                        <td><strong>91.6</strong></td>
+                        <td><strong>7.0</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ScanObjectNN -->
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p><strong>Classification results on ScanObjectNN (PB_T50_RS)</strong></p>
+                    <p><small>OA: overall accuracy. mAcc: mean per-class accuracy. Params: number of parameters in
+                        millions (M). A dash (-) indicates value not reported.</small></p>
+                </div>
+                <table class="table is-bordered is-striped is-fullwidth is-hoverable">
+                    <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>OA (%)</th>
+                        <th>mAcc (%)</th>
+                        <th>Params (M)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>PointNet</td>
+                        <td>75.2</td>
+                        <td>71.4</td>
+                        <td>3.5</td>
+                    </tr>
+                    <tr>
+                        <td>PointMAE</td>
+                        <td>85.2</td>
+                        <td>-</td>
+                        <td>22.1</td>
+                    </tr>
+                    <tr>
+                        <td>PointMLP</td>
+                        <td>85.4</td>
+                        <td>83.9</td>
+                        <td>12.6</td>
+                    </tr>
+                    <tr>
+                        <td>DGCNN</td>
+                        <td>86.1</td>
+                        <td>84.3</td>
+                        <td>1.8</td>
+                    </tr>
+                    <tr>
+                        <td>PointNet++</td>
+                        <td>86.2</td>
+                        <td>84.4</td>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <td>Point2vec</td>
+                        <td>87.5</td>
+                        <td>86.0</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>SI-Mamba</td>
+                        <td>87.3</td>
+                        <td>-</td>
+                        <td>12.3</td>
+                    </tr>
+                    <tr>
+                        <td>SPoTr</td>
+                        <td>88.6</td>
+                        <td>86.8</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>LFE-PM</td>
+                        <td>88.5</td>
+                        <td>-</td>
+                        <td>9.0</td>
+                    </tr>
+                    <tr>
+                        <td>PointNeXt</td>
+                        <td>88.2</td>
+                        <td>86.8</td>
+                        <td>1.4</td>
+                    </tr>
+                    <tr>
+                        <td>CurveCloud</td>
+                        <td>89.1</td>
+                        <td>86.5</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>KPConvX</td>
+                        <td>89.3</td>
+                        <td>88.1</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>PPT</td>
+                        <td>89.5</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PointGLiPE (ours)</strong></td>
+                        <td><strong>90.9</strong></td>
+                        <td><strong>89.9</strong></td>
+                        <td><strong>7.0</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <!-- ShapeNetPart Part Segmentation -->
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p><strong>Part segmentation results on ShapeNetPart</strong></p>
+                    <p><small>Ins.: instance-averaged mIoU; Cls.: class-averaged mIoU. Params: number of parameters in
+                        millions (M).</small></p>
+                </div>
+                <table class="table is-bordered is-striped is-fullwidth is-hoverable">
+                    <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Ins. (%)</th>
+                        <th>Cls. (%)</th>
+                        <th>Params (M)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>PointNet</td>
+                        <td>83.7</td>
+                        <td>80.4</td>
+                        <td>3.5</td>
+                    </tr>
+                    <tr>
+                        <td>PointNet++</td>
+                        <td>85.1</td>
+                        <td>81.9</td>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <td>DGCNN</td>
+                        <td>85.2</td>
+                        <td>82.3</td>
+                        <td>1.8</td>
+                    </tr>
+
+
+                    <tr>
+                        <td>PTv1</td>
+                        <td>86.6</td>
+                        <td>83.7</td>
+                        <td>7.8</td>
+                    </tr>
+                    <tr>
+                        <td>CurveNet</td>
+                        <td>86.8</td>
+                        <td>84.2</td>
+                        <td>2.0</td>
+                    </tr>
+                    <tr>
+                        <td>PointMLP</td>
+                        <td>86.9</td>
+                        <td>85.2</td>
+                        <td>12.6</td>
+                    </tr>
+                    <tr>
+                        <td>PointNeXt</td>
+                        <td>87.0</td>
+                        <td>85.2</td>
+                        <td>22.5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PointGLiPE (ours)</strong></td>
+                        <td><strong>87.3</strong></td>
+                        <td><strong>85.3</strong></td>
+                        <td><strong>7.6</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PointGLiPE (ours)*</strong></td>
+                        <td><strong>87.5</strong></td>
+                        <td><strong>85.5</strong></td>
+                        <td><strong>7.6</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ScanNet v2 Semantic Segmentation -->
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p><strong>Semantic segmentation results on ScanNet v2</strong></p>
+                    <p><small>Val: validation set mIoU (%); Test: test set mIoU (%). Params: number of parameters in
+                        millions (M). A dash (-) indicates value not reported.</small></p>
+                </div>
+                <table class="table is-bordered is-striped is-fullwidth is-hoverable">
+                    <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Val (%)</th>
+                        <th>Test (%)</th>
+                        <th>Params (M)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>PointNet++</td>
+                        <td>53.5</td>
+                        <td>33.9</td>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <td>PointConv</td>
+                        <td>61.0</td>
+                        <td>55.6</td>
+                        <td>2.5</td>
+                    </tr>
+                    <tr>
+                        <td>KpConv</td>
+                        <td>69.2</td>
+                        <td>68.0</td>
+                        <td>14.0</td>
+                    </tr>
+                    <tr>
+                        <td>Minkowski</td>
+                        <td>72.2</td>
+                        <td>73.4</td>
+                        <td>2.0</td>
+                    </tr>
+                    <tr>
+                        <td>BPNet</td>
+                        <td>73.9</td>
+                        <td>74.9</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>O-CNN</td>
+                        <td>74.0</td>
+                        <td>72.8</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>SFormer</td>
+                        <td>74.3</td>
+                        <td>73.7</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>PTv2</td>
+                        <td>75.4</td>
+                        <td>75.2</td>
+                        <td>11.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PointGLiPE (ours)</strong></td>
+                        <td><strong>75.8</strong></td>
+                        <td><strong>75.4</strong></td>
+                        <td><strong>12.1</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <div class="column is-full">
+                <div class="content has-text-centered">
+                    <p><strong>Semantic segmentation results on S3DIS Area 5</strong></p>
+                    <p><small>OA: overall accuracy; mAcc: mean class accuracy; mIoU: mean intersection-over-union across
+                        classes. IoUs for several dominant classes are omitted for brevity. A dash (-) indicates value
+                        not reported.</small></p>
+                </div>
+                <div class="table-container">
+                    <table class="table is-bordered is-striped is-fullwidth is-hoverable">
+                        <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>OA</th>
+                            <th>mAcc</th>
+                            <th>mIoU</th>
+                            <th>column</th>
+                            <th>window</th>
+                            <th>door</th>
+                            <th>table</th>
+                            <th>chair</th>
+                            <th>sofa</th>
+                            <th>book.</th>
+                            <th>board</th>
+                            <th>clutter</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>PTv1</td>
+                            <td>90.8</td>
+                            <td>76.5</td>
+                            <td>70.4</td>
+                            <td>38.0</td>
+                            <td>63.4</td>
+                            <td>74.3</td>
+                            <td>89.1</td>
+                            <td>82.4</td>
+                            <td>74.3</td>
+                            <td>80.2</td>
+                            <td>76.0</td>
+                            <td>59.3</td>
+                        </tr>
+                        <tr>
+                            <td>FPT</td>
+                            <td>-</td>
+                            <td>77.6</td>
+                            <td>71.0</td>
+                            <td>53.8</td>
+                            <td>71.2</td>
+                            <td>77.3</td>
+                            <td>81.3</td>
+                            <td>89.4</td>
+                            <td>60.1</td>
+                            <td>72.8</td>
+                            <td>80.4</td>
+                            <td>58.9</td>
+                        </tr>
+                        <tr>
+                            <td>PointNeXt</td>
+                            <td>91.0</td>
+                            <td>77.2</td>
+                            <td>71.1</td>
+                            <td>37.7</td>
+                            <td>59.3</td>
+                            <td>74.0</td>
+                            <td>83.1</td>
+                            <td>91.6</td>
+                            <td>77.4</td>
+                            <td>77.2</td>
+                            <td>78.8</td>
+                            <td>60.6</td>
+                        </tr>
+                        <tr>
+                            <td>PointMixer</td>
+                            <td>-</td>
+                            <td>77.4</td>
+                            <td>71.4</td>
+                            <td>43.8</td>
+                            <td>62.1</td>
+                            <td>78.5</td>
+                            <td>90.6</td>
+                            <td>82.2</td>
+                            <td>73.9</td>
+                            <td>79.8</td>
+                            <td>78.5</td>
+                            <td>59.4</td>
+                        </tr>
+                        <tr>
+                            <td>StratifiedFormer</td>
+                            <td>91.5</td>
+                            <td>78.1</td>
+                            <td>72.0</td>
+                            <td>46.1</td>
+                            <td>60.0</td>
+                            <td>76.8</td>
+                            <td>92.6</td>
+                            <td>84.5</td>
+                            <td>77.8</td>
+                            <td>75.2</td>
+                            <td>78.1</td>
+                            <td>64.0</td>
+                        </tr>
+                        <tr>
+                            <td>DU-Net</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>72.2</td>
+                            <td>40.0</td>
+                            <td>60.7</td>
+                            <td>82.7</td>
+                            <td>90.8</td>
+                            <td>83.1</td>
+                            <td>78.5</td>
+                            <td>83.5</td>
+                            <td>75.9</td>
+                            <td>64.1</td>
+                        </tr>
+                        <tr>
+                            <td>PTv2</td>
+                            <td>91.6</td>
+                            <td>78.0</td>
+                            <td>72.0</td>
+                            <td>34.4</td>
+                            <td>64.7</td>
+                            <td>77.9</td>
+                            <td>93.1</td>
+                            <td>84.4</td>
+                            <td>77.3</td>
+                            <td>86.3</td>
+                            <td>84.5</td>
+                            <td>62.2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PointGLiPE (ours)</strong></td>
+                            <td><strong>92.5</strong></td>
+                            <td><strong>78.5</strong></td>
+                            <td><strong>73.1</strong></td>
+                            <td>49.2</td>
+                            <td>62.4</td>
+                            <td>73.6</td>
+                            <td>85.5</td>
+                            <td>93.3</td>
+                            <td>73.1</td>
+                            <td>80.8</td>
+                            <td>83.2</td>
+                            <td>67.0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-variable is-8">
+            <!-- Ablation on Positional Encoding -->
+            <div class="column">
+                <div class="content">
+                    <div class="content has-text-centered">
+                        <p><strong>Ablation study on PointGLiPE components</strong></p>
+                        <p><small>&#10003; = enabled, &#10007; = disabled. Metrics: OA and mAcc on ModelNet40.</small>
+                        </p>
+                    </div>
+                    <div class="table-container">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>MSPE</th>
+                                <th>LGPE</th>
+                                <th>LRPE</th>
+                                <th>OA (%)</th>
+                                <th>mAcc (%)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>&#10007;</td>
+                                <td>&#10007;</td>
+                                <td>&#10007;</td>
+                                <td>93.0</td>
+                                <td>89.5</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>&#10003;</td>
+                                <td>&#10007;</td>
+                                <td>&#10007;</td>
+                                <td>93.2</td>
+                                <td>90.0</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>&#10007;</td>
+                                <td>&#10003;</td>
+                                <td>&#10007;</td>
+                                <td>93.4</td>
+                                <td>90.8</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>&#10007;</td>
+                                <td>&#10007;</td>
+                                <td>&#10003;</td>
+                                <td>93.6</td>
+                                <td>90.7</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>&#10003;</td>
+                                <td>&#10003;</td>
+                                <td>&#10007;</td>
+                                <td>94.1</td>
+                                <td>91.0</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>&#10003;</td>
+                                <td>&#10007;</td>
+                                <td>&#10003;</td>
+                                <td>93.5</td>
+                                <td>90.6</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>&#10007;</td>
+                                <td>&#10003;</td>
+                                <td>&#10003;</td>
+                                <td>93.6</td>
+                                <td>90.5</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>&#10003;</td>
+                                <td>&#10003;</td>
+                                <td>&#10003;</td>
+                                <td><strong>94.4</strong></td>
+                                <td><strong>91.6</strong></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ablation on Aggregation & PE -->
+            <div class="column">
+                <div class="content">
+                    <div class="content has-text-centered">
+                        <p><strong>Ablation of local aggregation and positional encoding</strong></p>
+                        <p><small>Aggregation: max-pooling / scalar attention / vector attention. PE: None / MLP-based /
+                            GLiPE-based.</small></p>
+                    </div>
+                    <div class="table-container">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th>Aggregation</th>
+                                <th>PE</th>
+                                <th>OA (%)</th>
+                                <th>mAcc (%)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Scalar attention</td>
+                                <td>None</td>
+                                <td>92.4</td>
+                                <td>89.2</td>
+                            </tr>
+                            <tr>
+                                <td>Scalar attention</td>
+                                <td>MLP-based PE</td>
+                                <td>92.8</td>
+                                <td>89.8</td>
+                            </tr>
+                            <tr>
+                                <td>Scalar attention</td>
+                                <td>GLiPE (ours)</td>
+                                <td>93.0</td>
+                                <td>90.5</td>
+                            </tr>
+                            <tr>
+                                <td>Vector attention</td>
+                                <td>None</td>
+                                <td>93.2</td>
+                                <td>90.6</td>
+                            </tr>
+                            <tr>
+                                <td>Vector attention</td>
+                                <td>MLP-based PE</td>
+                                <td>93.4</td>
+                                <td>90.8</td>
+                            </tr>
+                            <tr>
+                                <td>Vector attention</td>
+                                <td>GLiPE (ours)</td>
+                                <td>93.7</td>
+                                <td>90.9</td>
+                            </tr>
+                            <tr>
+                                <td>Max-pooling</td>
+                                <td>None (baseline)</td>
+                                <td>93.0</td>
+                                <td>89.5</td>
+                            </tr>
+                            <tr>
+                                <td>Max-pooling</td>
+                                <td>MLP-based PE</td>
+                                <td>93.6</td>
+                                <td>90.3</td>
+                            </tr>
+                            <tr>
+                                <td>Max-pooling</td>
+                                <td>GLiPE (ours)</td>
+                                <td><strong>94.4</strong></td>
+                                <td><strong>91.6</strong></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div style="text-align: center;">
+                        <img src="./dynamic/result/modelnet40.png"
+                             style="max-width: 70%; height: auto; display: inline-block;">
+                    </div>
+                    <p><strong>Normalized confusion matrix of PointGLiPE on the ModelNet40 test set.</strong> The
+                        horizontal axis represents ground-truth classes, and the vertical axis represents predicted
+                        classes. Red asterisks (`*')indicate categories where the model achieves over 90% accuracy.
+                        Most categories are classified correctly, demonstrating the strong discriminative ability of
+                        PointGLiPE.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div style="text-align: center;">
+                        <img src="./dynamic/result/shapenet.png"
+                             style="max-width: 70%; height: auto; display: inline-block;">
+                    </div>
+                    <p><strong>Segmentation results on ShapeNetPart.</strong> From top to bottom:
+                        input point cloud, predictions by PointGLiPE, and ground-truth labels. The
+                        visualization shows that PointGLiPE accurately captures fine-grained part structures across
+                        diverse object categories.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <div class="content has-text-justified">
+                    <div style="text-align: center;">
+                        <img src="./dynamic/result/s3dis.png"
+                             style="max-width: 100%; height: auto; display: inline-block;">
+                    </div>
+                    <p><strong>Semantic segmentation results on S3DIS.</strong> From top to bottom:
+                        input point cloud, predictions by PointGLiPE, and ground-truth labels. PointGLiPE
+                        effectively captures both global scene layout and local geometric details, producing accurate
+                        semantic labels for indoor scenes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-full-width">
+                <h2 class="title is-3">Conclusion</h2>
+                <div class="content has-text-justified">
+                    <p>
+                        We propose PointGLiPE, a positional encoding framework tailored to the
+                        unique characteristics of point clouds for 3D understanding.
+                        Unlike existing methods that rely solely on single-scale or purely geometric cues, PointGLiPE
+                        integrates three complementary encoding branches:
+                        (1) Multi-Scale Positional Encoding (MSPE) to capture global spatial context,
+                        (2) Local Geometric Positional Encoding (LGPE) to extract fine-grained structural cues,
+                        and
+                        (3) Local Relational Positional Encoding (LRPE) to model adaptive neighborhood
+                        interactions.
+                        Together, these modules enhance global--local representation learning and relational reasoning
+                        in point-based networks.
+                        Extensive experiments on five standard benchmarks---ModelNet40, ScanObjectNN, ShapeNetPart,
+                        S3DIS, and ScanNet v2---demonstrate consistent improvements in overall accuracy and mean IoU
+                        across various tasks, validating the effectiveness and generality of the proposed design.
+                        Comprehensive ablation studies further confirm the contribution of each module within the
+                        integrated framework.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>
