@@ -59,29 +59,44 @@
 
 <!--下面开始正文-->
 <body>
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered is-variable is-3">
-        <div class="column is-narrow has-text-centered">
-          <!-- Paper Button -->
-          <a class="button is-dark is-rounded is-normal is-fullwidth"
-             style="pointer-events: none; cursor: default;">
-            <span class="icon">
-              <i class="fas fa-file-pdf"></i>
-            </span>
-            <span>The paper will be released</span>
-          </a>
-        </div>
+<section class="hero"><!-- Bulma 的 hero 区块，通常用于顶部主视觉区域 -->
+  <div class="hero-body"><!-- 内容主体 -->
+    <div class="container is-max-desktop"><!-- 设置最大宽度的容器 -->
+      <div class="columns is-centered"> <!-- 水平居中列 -->
+        <div class="column has-text-centered"><!-- 单列 + 文本居中 -->
 
-        <div class="column is-narrow has-text-centered">
-          <!-- Code Button -->
-          <a class="button is-dark is-rounded is-normal is-fullwidth"
-             href="https://github.com/PointGLiPE/PointGLiPE"
-             target="_blank">
-            <span class="icon"><i class="fab fa-github"></i></span>
-            <span>The code</span>
-          </a>
+          <!-- 论文题目 -->
+          <h1 class="title is-1 publication-title" style="color: #4CAF50; font-weight: bolder;">
+            Rethinking and Improving Position Encoding for Point Cloud: A Global-Local Integrated Framework
+          </h1>
+
+          <!-- 作者信息 -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <a href="">Yong Yang, jianming Huang, Chunyang Huang, Mengyuan Ge, Junfeng Yao</a> </span>
+          </div>
+
+          <!-- 按钮区域 -->
+          <div class="columns is-centered mt-5">
+            <div class="column is-narrow">
+              <!-- PDF 按钮 -->
+              <a class="button is-dark is-rounded is-medium" style="pointer-events: none; cursor: default;">
+                <span class="icon">
+                  <i class="fas fa-file-pdf"></i>
+                </span>
+                <span>The paper will be released</span>
+              </a>
+            </div>
+            <div class="column is-narrow">
+              <!-- Code 按钮 -->
+              <a class="button is-dark is-rounded is-medium" href="https://github.com/PointGLiPE/PointGLiPE" target="_blank">
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                <span>The code</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
